@@ -157,7 +157,7 @@
         <h3>Certificate handoff</h3>
         <p class="small">We will send certificates outside of this quiz. Use one of the options below to pass your completion details to XFoundation.</p>
         <div class="actions" style="flex-wrap:wrap">
-          <a id="mailtoBtn" class="btn" href="#" target="_blank" rel="noopener">Email certificate request</a>
+          <a id="mailtoBtn" class="btn" href="#" target="_blank" rel="noopener">Compose in Gmail</a>
           <button id="downloadJsonBtn" class="secondary">Download completion.json</button>
           <button id="copyBtn" class="ghost">Copy details</button>
           <button id="sendWebhookBtn" class="warn hidden">Send to webhook</button>
@@ -181,7 +181,8 @@
   // ====== Simple configuration you can edit ======
   const QUIZ_TITLE = "XFoundation – Fentanyl & Narcan Training Quiz";
   const EMAIL_TO = "xfoundationmjgx@gmail.com";   // set your inbox for certificate requests
-  const CERT_WEBHOOK_URL = ""; // optional: paste a Zapier/Make/Apps Script webhook URL. Leave blank to hide the button.
+  const CERT_WEBHOOK_URL = "https://xfoundationx.org/api/xfoundation-cert-webhook"; // replace with your Zapier/Make URL
+  const CERT_WEBHOOK_SECRET = ""; // optional: adds X-Quiz-Secret header
 
   // ====== Questions ======
   const QUESTION_BANK = [
@@ -477,14 +478,45 @@
     const pretty = JSON.stringify(payload, null, 2);
     document.getElementById('payloadPreview').textContent = pretty;
 
-    // mailto
-    const subject = encodeURIComponent(`Certificate Request: ${QUIZ_TITLE}`);
-    const body = encodeURIComponent(
-      `Please issue a certificate.\n\nName: ${payload.user.name}\nEmail: ${payload.user.email}\nCompleted: ${payload.completedAt}\nMastery: ${payload.mastery}\nSecond-tries used: ${payload.secondTriesUsed}\n\nPayload:\n${pretty}`
-    );
-    const mailHref = `mailto:${encodeURIComponent(EMAIL_TO)}?subject=${subject}&body=${body}`;
-    const mailBtn = document.getElementById('mailtoBtn');
-    mailBtn.href = mailHref;
+    
+// email compose links (Gmail first, plus Outlook Web and mailto fallback)
+const subject = `Certificate Request: ${QUIZ_TITLE}`;
+const bodyPlain = `Please issue a certificate.
+
+Name: ${payload.user.name}
+Email: ${payload.user.email}
+Completed: ${payload.completedAt}
+Mastery: ${payload.mastery}
+Second-tries used: ${payload.secondTriesUsed}
+
+Payload:
+${pretty}`;
+
+const mailto = `mailto:${encodeURIComponent(EMAIL_TO)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyPlain)}`;
+const gmail = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(EMAIL_TO)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyPlain)}`;
+const outlook = `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(EMAIL_TO)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyPlain)}`;
+
+const actionsWrap = document.querySelector('#certBlock .actions');
+const mailBtn = document.getElementById('mailtoBtn');
+mailBtn.href = gmail; // default to Gmail compose
+mailBtn.setAttribute('target','_blank');
+mailBtn.setAttribute('rel','noopener');
+
+// Add Outlook Web and default mailto buttons
+const outlookBtn = document.createElement('a');
+outlookBtn.className = 'btn secondary';
+outlookBtn.href = outlook;
+outlookBtn.target = '_blank';
+outlookBtn.rel = 'noopener';
+outlookBtn.textContent = 'Compose in Outlook Web';
+actionsWrap.appendChild(outlookBtn);
+
+const mailtoAlt = document.createElement('a');
+mailtoAlt.className = 'btn ghost';
+mailtoAlt.href = mailto;
+mailtoAlt.textContent = 'Use default Mail app';
+actionsWrap.appendChild(mailtoAlt);
+
 
     // download JSON
     const blob = new Blob([pretty], {type:"application/json"});
@@ -514,7 +546,7 @@
         try{
           const resp = await fetch(CERT_WEBHOOK_URL, {
             method:"POST",
-            headers:{ "Content-Type":"application/json" },
+            headers:Object.assign({ "Content-Type":"application/json" }, CERT_WEBHOOK_SECRET ? { "X-Quiz-Secret": CERT_WEBHOOK_SECRET } : {}),
             body: JSON.stringify(payload)
           });
           if (!resp.ok) throw new Error("Non-200 response");
