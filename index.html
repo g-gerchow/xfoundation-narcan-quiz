@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>XFoundation – Naloxone Training Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --text:#08060B; --bg:#FFFFFF; --sep:#F7F7F7;
+      --primary:#E86D36; --primary-ink:#FFFFFF;
+      --secondary:#4B3D75; --secondary-ink:#FFFFFF;
+      --accent:#2E1A4E; --muted:#4B4B4B;
+      --card:#FFFFFF; --border:#E9E9E9;
+      --ok:#22c55e; --warn:#f59e0b; --err:#B00020;
+    }
+    html,body{height:100%}
+    body{margin:0;font-family:"Source Sans Pro",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.5}
+    .wrap{max-width:920px;margin:0 auto;padding:24px 16px 80px}
+    header.brand{display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid var(--accent);padding-bottom:12px;margin-bottom:20px;gap:12px}
+    .logo{height:96px;object-fit:contain}
+    @media (max-width:900px){ .logo{height:72px} }
+    @media (max-width:600px){ .logo{height:56px} }
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.04)}
+    h1,h2,h3,.legend{font-family:"PT Sans",sans-serif;margin:0 0 8px}
+    h1{font-weight:700}
+    h2{font-weight:700;font-size:1.25rem}
+    p.lead{color:#333;margin-top:4px}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+    button,a.btn{appearance:none;border:1px solid transparent;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+    .btn-primary{background:var(--primary);color:var(--primary-ink)} .btn-secondary{background:var(--secondary);color:var(--secondary-ink)} .btn-ghost{background:#fff;color:var(--text);border-color:var(--border)} .btn-warning{background:var(--warn);color:#000}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .grid{display:grid;gap:14px} .grid-2{grid-template-columns:1fr;gap:14px} @media (min-width:720px){.grid-2{grid-template-columns:1fr 1fr}}
+    .field{display:flex;flex-direction:column;gap:6px} .field label{font-family:"PT Sans",sans-serif;font-weight:700;color:#222}
+    .field input,.field select{padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--text)}
+    .notice{padding:12px 14px;border-radius:12px;border:1px dashed var(--border);background:var(--sep);color:#333;margin-top:10px}
+    .feedback{border-left:4px solid var(--ok);padding:10px 12px;background:#F1FBF4;border-radius:8px;color:#0B5B2E} .feedback.bad{border-color:var(--err);background:#FDE7EA;color:#7A0012}
+    .hint{border-left:4px solid var(--warn);background:#FFF8E6;color:#7A4A00;padding:10px 12px;border-radius:8px}
+    .progress{display:flex;align-items:center;gap:12px;margin-bottom:12px} .bar{flex:1;height:10px;border-radius:999px;background:#EFEFEF;overflow:hidden} .bar span{display:block;height:100%;width:0%;background:linear-gradient(90deg,#E86D36,#4B3D75);transition:width .35s}
+    .choices{display:grid;gap:10px} .choice{display:flex;gap:10px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:#fff}
+    .hidden{display:none !important} .center{text-align:center} .footer{margin-top:16px;font-size:.85rem;color:#666} .small{font-size:.9rem;color:#555}
+    .sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+    .callout{padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#fff;color:#333}
+    code.inline{background:#fff;border:1px solid var(--border);border-radius:6px;padding:2px 6px}
+    .donate{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:12px}
+    .donate img{width:130px;height:130px;border:1px solid var(--border);border-radius:12px;padding:6px;background:#fff}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="brand">
+      <div style="display:flex;align-items:center;gap:10px">
+        <!-- Restored logo exactly like the Spanish header -->
+        <img class="logo" alt="X FOUNDATION — End fentanyl poisoning." src="assets/xfoundation-logo-dark.png" />
+      </div>
+
+      <!-- Language toggle (defaults to English) -->
+      <label for="lang" class="sr-only">Language</label>
+      <select id="lang" aria-label="Language" style="padding:8px 12px;border:1px solid var(--border);border-radius:10px">
+        <option value="en" selected>English</option>
+        <option value="es">Español</option>
+      </select>
+      <!-- (Beta badge intentionally removed) -->
+    </header>
+
+    <div id="screen-intro" class="card">
+      <h1>Naloxone Training Quiz</h1>
+      <p class="lead">Enter your info, complete the quiz, then email us your results to receive your certificate.</p>
+
+      <div class="grid grid-2" style="margin-top:14px">
+        <div class="field">
+          <label for="nameInput">Full name</label>
+          <input id="nameInput" type="text" autocomplete="name" placeholder="First Last" />
+        </div>
+        <div class="field">
+          <label for="emailInput">Email address</label>
+          <input id="emailInput" type="email" autocomplete="email" placeholder="you@example.org" />
+        </div>
+        <div class="field">
+          <label for="ageRange">Age range (choose “Prefer not to say” if you wish)</label>
+          <select id="ageRange">
+            <option value="">Select your age range</option>
+            <option>10–19</option><option>20–29</option><option>30–39</option>
+            <option>40–49</option><option>50–59</option><option>60–69</option>
+            <option>70–79</option><option>80+</option><option>Prefer not to say</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="gender">Gender (choose “Prefer not to say” if you wish)</label>
+          <select id="gender">
+            <option value="">Select gender</option>
+            <option>Female</option><option>Male</option><option>Non-binary</option>
+            <option>Prefer not to say</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="notice">
+        Educational only, not medical advice. In an emergency, call 911. We collect your name and email to issue certificates; age range and gender are optional and include “Prefer not to say.”
+      </div>
+
+      <div id="introFeedback" class="feedback bad hidden" role="status"></div>
+
+      <div class="actions">
+        <button id="startBtn" class="btn-primary">Start Quiz</button>
+      </div>
+    </div>
+
+    <div id="screen-quiz" class="card hidden" aria-live="polite">
+      <div class="progress">
+        <div id="progressText" class="small">Question 1 of 10</div>
+        <div class="bar"><span id="progressBar"></span></div>
+      </div>
+      <form id="qForm" novalidate>
+        <fieldset id="qFieldset">
+          <legend id="qPrompt" style="font-weight:700; font-size:1.1rem">Question text…</legend>
+          <div id="choices" class="choices"></div>
+          <div id="textAnswerWrap" class="hidden">
+            <label for="textAnswer" class="sr-only">Your answer</label>
+            <input id="textAnswer" type="text" placeholder="Type your answer" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:#fff; color:#08060B;" />
+          </div>
+        </fieldset>
+
+        <div id="feedback" class="feedback hidden" role="status"></div>
+        <div id="hint" class="hint hidden" role="status"></div>
+        <div id="explain" class="feedback hidden" role="status"></div>
+
+        <div class="actions">
+          <button type="button" id="submitBtn" class="btn-primary">Submit</button>
+          <button type="button" id="nextBtn" class="btn-secondary hidden">Next</button>
+          <button type="button" id="quitBtn" class="btn-ghost">Quit</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="screen-results" class="card hidden">
+      <h2 class="center" style="margin-top:0">Results</h2>
+      <div class="center"><p id="resultSummary" class="lead"></p></div>
+
+      <div id="certBlock" class="hidden">
+        <div class="callout">
+          <strong>To receive your certificate:</strong>
+          <ol style="margin:8px 0 0 18px">
+            <li>Tap <em>Compose in Gmail</em> or <em>Compose in Outlook</em> to send us your results, or use <em>Copy details</em> as a fallback.</li>
+            <li>Subject line will be filled in; you can copy it separately if needed.</li>
+          </ol>
+          <div class="donate">
+            <img id="qrDonate" alt="Donate QR" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fxfoundationx.org%2FDonate">
+            <div>
+              <div style="font-weight:700; font-family:'PT Sans',sans-serif; margin-bottom:4px">Support XFoundation</div>
+              <div class="small">Scan the QR to donate or use: <a id="donateLink" href="https://xfoundationx.org/Donate" target="_blank" rel="noopener">xfoundationx.org/Donate</a></div>
+            </div>
+          </div>
+        </div>
+        <div class="actions" style="flex-wrap:wrap; margin-top:10px">
+          <a id="gmailBtn" class="btn-primary btn" href="#" target="_blank" rel="noopener">Compose in Gmail</a>
+          <a id="outlookBtn" class="btn-secondary btn" href="#" target="_blank" rel="noopener">Compose in Outlook</a>
+          <button id="copyBtn" class="btn-ghost">Copy details</button>
+        </div>
+        <div class="small" style="margin-top:8px">
+          Subject: <code class="inline" id="subjectLineText"></code>
+          <button id="copySubjectBtn" class="btn-ghost" style="padding:6px 10px; border-radius:8px; margin-left:6px">Copy subject</button>
+        </div>
+        <!-- JSON preview removed per request -->
+        <p class="footer center">Version: v3-beta4</p>
+      </div>
+
+      <div id="missedBlock" class="hidden">
+        <h3>Items to master</h3>
+        <ol id="missedList"></ol>
+      </div>
+
+      <div class="actions center" style="justify-content:center">
+        <button id="retakeMissedBtn" class="btn-warning hidden">Retake Missed Only</button>
+        <button id="restartBtn" class="btn-primary">Start Over</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const QUIZ_TITLE = "XFoundation – Naloxone Training Quiz";
+  const EMAIL_TO = "xfoundationmjgx@gmail.com";
+  const DONATE_URL = "https://xfoundationx.org/Donate";
+
+  const QUESTION_BANK = [
+    { id:"q1", type:"mcq", prompt:"Fentanyl is especially dangerous because:", choices:[
+      {text:"It is less potent than heroin"}, {text:"It is often mixed with other drugs without the user’s knowledge", correct:true},
+      {text:"It can only be found in prescription form"}, {text:"It has no effect on the central nervous system"}],
+      hint:"Counterfeit pills and other drugs may contain fentanyl without the user knowing.",
+      explanation:"Fentanyl is extremely potent and frequently added to drugs like heroin, cocaine, or counterfeit pills, increasing risk of overdose or poisoning."
+    },
+    { id:"q2", type:"tf", prompt:"True or False: You should always call 911 immediately if you suspect someone is experiencing an opioid overdose or poisoning.", choices:[
+      {text:"True", correct:true}, {text:"False"}],
+      hint:"Emergency services are critical even if naloxone seems to help.",
+      explanation:"Always call 911 immediately. Even if Narcan revives the person, medical follow-up is essential."
+    },
+    { id:"q3", type:"mcq", prompt:"Which of the following is a common sign of an opioid overdose or poisoning?", choices:[
+      {text:"Slow or no breathing"}, {text:"Pinpoint pupils"}, {text:"Unresponsiveness"}, {text:"All of the above", correct:true}],
+      hint:"Opioid overdose or poisoning affects breathing and consciousness.",
+      explanation:"Slow or no breathing, pinpoint pupils, and unresponsiveness are classic signs of opioid overdose or poisoning."
+    },
+    { id:"q4", type:"text", prompt:"Fill in the blank: The medication used to reverse an opioid overdose or poisoning is called ________.", acceptable:["naloxone","narcan","naloxone (narcan)","nalaxone","naloxon","narcan nasal spray"], normalize:true,
+      hint:"Brand name Narcan, generic name naloxone.",
+      explanation:"Naloxone (brand name Narcan) reverses opioid overdose or poisoning by blocking opioid receptors."
+    },
+    { id:"q5", type:"mcq", prompt:"How is Narcan (naloxone) most commonly administered in community settings?", choices:[
+      {text:"Intravenous injection"}, {text:"Nasal spray", correct:true}, {text:"Oral tablet"}, {text:"Inhaler"}],
+      hint:"Community responders prioritize the simplest route.",
+      explanation:"Community responders most often use Narcan nasal spray due to ease and safety."
+    },
+    { id:"q6", type:"tf", prompt:"True or False: It is safe to administer Narcan even if you are unsure whether the person has taken opioids.", choices:[
+      {text:"True", correct:true}, {text:"False"}],
+      hint:"Naloxone has no effect if opioids are not present.",
+      explanation:"Narcan is safe to give even if opioids are not involved, so it is appropriate when overdose or poisoning is suspected."
+    },
+    { id:"q7", type:"mcq", prompt:"Scenario: You find someone unresponsive with shallow breathing and drug paraphernalia nearby. What is the correct sequence of actions?", choices:[
+      {text:"Give water → Call 911 → Wait"},
+      {text:"Call 911 → Give Narcan → Begin rescue breathing/CPR if needed", correct:true},
+      {text:"Place in recovery position only"}, {text:"Wait for someone more qualified to arrive"}],
+      hint:"Always call 911 first. Give naloxone and begin life support if breathing is compromised.",
+      explanation:"Correct sequence: Call 911, give Narcan, then provide rescue breathing/CPR if needed."
+    },
+    { id:"q8", type:"mcq", prompt:"If the first dose of Narcan does not revive the person within 2–3 minutes, you should:", choices:[
+      {text:"Do nothing further and wait"}, {text:"Administer a second dose of Narcan", correct:true}, {text:"Leave the person alone to recover"}, {text:"Give them food or drink"}],
+      hint:"Fentanyl-involved overdose or poisoning often needs multiple doses.",
+      explanation:"If there’s no response after 2–3 minutes, a second dose may be required."
+    },
+    { id:"q9", type:"tf", prompt:"True or False: Someone who has overdosed on opioids may require more than one dose of Narcan.", choices:[
+      {text:"True", correct:true}, {text:"False"}],
+      hint:"Potent opioids can outlast a single dose of naloxone.",
+      explanation:"Strong opioids like fentanyl can outlast a single dose of Narcan; multiple doses may be necessary."
+    },
+    { id:"q10", type:"mcq", prompt:"After administering Narcan, what should you do while waiting for emergency responders?", choices:[
+      {text:"Continue to monitor breathing and responsiveness"},
+      {text:"Provide rescue breaths/CPR if necessary"},
+      {text:"Place the person in the recovery position if they are breathing"},
+      {text:"All of the above", correct:true}],
+      hint:"Keep the person breathing and safe until EMS arrives.",
+      explanation:"Monitoring, rescue breathing/CPR, and placing the person in recovery position help survival until EMS arrives."
+    }
+  ];
+
+  let state = { order: [], cursor: 0, answers: {}, learningMode: true, user: { name: "", email: "", ageRange: "", gender: "" }, startedAt: null };
+
+  const deepClone = (o)=>JSON.parse(JSON.stringify(o));
+  function shuffle(a){const x=a.slice();for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];}return x;}
+
+  function validateIntro(){
+    const name = document.getElementById('nameInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
+    const ageRange = document.getElementById('ageRange').value || "Prefer not to say";
+    const gender = document.getElementById('gender').value || "Prefer not to say";
+    const fb = document.getElementById('introFeedback');
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!name || !emailOk){
+      fb.textContent = !name ? "Please enter your name." : "Please enter a valid email address.";
+      fb.classList.remove('hidden'); return false;
+    }
+    fb.classList.add('hidden');
+    state.user = {name, email, ageRange, gender}; return true;
+  }
+
+  function startQuiz(){
+    if (!validateIntro()) return;
+    state.order = shuffle([...Array(QUESTION_BANK.length).keys()]);
+    state.shuffled = QUESTION_BANK.map(q=>{const c=deepClone(q); if (c.type==="mcq"||c.type==="tf") c.choices = shuffle(c.choices.map(x=>({...x}))); return c;});
+    state.cursor=0; state.answers={}; state.startedAt=new Date().toISOString();
+    document.getElementById('screen-intro').classList.add('hidden');
+    document.getElementById('screen-results').classList.add('hidden');
+    document.getElementById('screen-quiz').classList.remove('hidden');
+    renderQuestion();
+  }
+
+  function renderQuestion(){
+    const idx = state.order[state.cursor], q = state.shuffled[idx];
+    document.getElementById('progressText').textContent = `Question ${state.cursor+1} of ${state.order.length}`;
+    document.getElementById('progressBar').style.width = Math.round((state.cursor/state.order.length)*100)+'%';
+    document.getElementById('qPrompt').textContent = q.prompt;
+
+    const choices = document.getElementById('choices');
+    const textWrap = document.getElementById('textAnswerWrap');
+    const textInput = document.getElementById('textAnswer');
+    choices.innerHTML=""; hide(document.getElementById('feedback')); hide(document.getElementById('hint')); hide(document.getElementById('explain'));
+    document.getElementById('nextBtn').classList.add('hidden'); document.getElementById('submitBtn').classList.remove('hidden');
+
+    if (q.type==="mcq"||q.type==="tf"){
+      textWrap.classList.add('hidden'); choices.classList.remove('hidden');
+      q.choices.forEach((c,i)=>{
+        const id=`opt-${state.cursor}-${i}`;
+        const div=document.createElement('div'); div.className="choice";
+        div.innerHTML = `<input type="radio" id="${id}" name="opt" value="${i}"><label for="${id}">${c.text}</label>`;
+        choices.appendChild(div);
+      });
+    } else {
+      choices.classList.add('hidden'); textWrap.classList.remove('hidden'); textInput.value=""; textInput.focus();
+    }
+  }
+
+  function getUserAnswer(q){
+    if (q.type==="mcq"||q.type==="tf"){const el=document.querySelector('input[name="opt"]:checked'); return el?parseInt(el.value,10):null;}
+    return document.getElementById('textAnswer').value;
+  }
+
+  const normalizeText = s => s.toLowerCase().trim().replace(/[\\s\\-\\_\\(\\)\\.]+/g,' ');
+  function checkAnswer(q,user){
+    if (q.type==="mcq"||q.type==="tf"){ const i=Number(user); return q.choices[i]&&!!q.choices[i].correct; }
+    if (!user) return false; const u=normalizeText(user);
+    if (q.normalize){ const acc=(q.acceptable||[]).map(normalizeText); return acc.some(a=>u.includes(a)); }
+    return (q.answer||"").toLowerCase()===u;
+  }
+
+  function show(el){el.classList.remove('hidden')} function hide(el){el.classList.add('hidden')}
+
+  function submitCurrent(){
+    const qIndex=state.order[state.cursor], q=state.shuffled[qIndex];
+    const user=getUserAnswer(q); const feedback=document.getElementById('feedback'); const hint=document.getElementById('hint'); const explain=document.getElementById('explain');
+
+    if (user===null || (q.type==="text" && String(user).trim()==="")){
+      feedback.textContent="Please select or enter an answer."; feedback.className="feedback bad"; show(feedback); return;
+    }
+
+    const correct=checkAnswer(q,user);
+    const rec=state.answers[q.id] || {attempts:0, mastered:false, usedSecondTry:false, firstTryCorrect:false};
+    rec.attempts += 1;
+
+    if (correct){
+      rec.mastered=true; rec.firstTryCorrect = rec.attempts===1; if (rec.attempts===2) rec.usedSecondTry=true; state.answers[q.id]=rec;
+      feedback.textContent = rec.attempts===1 ? "Correct. Nice work." : "Correct on your second try. Good job.";
+      feedback.className="feedback"; show(feedback); hide(hint); explain.textContent=q.explanation||""; show(explain);
+      document.getElementById('submitBtn').classList.add('hidden'); document.getElementById('nextBtn').classList.remove('hidden'); return;
+    }
+
+    state.answers[q.id]=rec;
+    if (rec.attempts===1 && state.learningMode){
+      feedback.textContent="Not quite. You have one more try."; feedback.className="feedback bad"; show(feedback);
+      hint.textContent=q.hint || "Think about the safest first step and the simplest effective action."; show(hint);
+    } else {
+      rec.mastered=false; feedback.textContent="Incorrect. Review the explanation, then tap Next."; feedback.className="feedback bad"; show(feedback);
+      hide(hint); explain.textContent=q.explanation || "Review the guidance above."; show(explain);
+      document.getElementById('submitBtn').classList.add('hidden'); document.getElementById('nextBtn').classList.remove('hidden');
+      Array.from(document.getElementById('qFieldset').querySelectorAll('input')).forEach(i=>i.disabled=true);
+    }
+  }
+
+  function nextQuestion(){ state.cursor += 1; if (state.cursor >= state.order.length){ endQuiz(); } else { renderQuestion(); window.scrollTo({top:0,behavior:'smooth'}); } }
+
+  function endQuiz(){
+    document.getElementById('screen-quiz').classList.add('hidden');
+    const total=state.order.length;
+    const masteredIds=Object.keys(state.answers).filter(id=>state.answers[id].mastered);
+    const mastered=masteredIds.length;
+    const notMastered=QUESTION_BANK.map(q=>q.id).filter(id=>!(state.answers[id]&&state.answers[id].mastered));
+
+    const allMastered = mastered===total;
+    const summary = allMastered
+      ? `You achieved 100% mastery. Lifesaving steps remembered: call 911, give naloxone, rescue breathing, repeat in 2–3 minutes if needed.`
+      : `Mastered ${mastered}/${total}. To pass, tap “Retake Missed Only” and finish the remaining items.`;
+    document.getElementById('resultSummary').textContent = summary;
+
+    const missedBlock=document.getElementById('missedBlock'); const missedList=document.getElementById('missedList'); missedList.innerHTML="";
+    if (!allMastered){
+      show(missedBlock);
+      notMastered.forEach(id=>{ const q=QUESTION_BANK.find(x=>x.id===id); const li=document.createElement('li'); li.textContent=q?q.prompt:id; missedList.appendChild(li); });
+      document.getElementById('retakeMissedBtn').classList.remove('hidden'); document.getElementById('certBlock').classList.add('hidden');
+    } else {
+      missedBlock.classList.add('hidden'); document.getElementById('retakeMissedBtn').classList.add('hidden');
+      buildFinishBlock(); show(document.getElementById('certBlock'));
+    }
+    document.getElementById('screen-results').classList.remove('hidden');
+  }
+
+  function getCompletionPayload(){
+    const secondTries = Object.values(state.answers).filter(r=>r.usedSecondTry).length;
+    return {
+      quiz: QUIZ_TITLE,
+      completedAt: new Date().toISOString(),
+      startedAt: state.startedAt,
+      user: {...state.user},
+      mastery: "100%",
+      score: `${Object.keys(state.answers).length}/${QUESTION_BANK.length}`,
+      secondTriesUsed: secondTries,
+      version: "v3-beta4"
+    };
+  }
+
+  function buildFinishBlock(){
+    const payload = getCompletionPayload();
+    const name = payload.user.name || "Participant";
+    const dateStr = new Date().toISOString().slice(0,10);
+    const subject = `XF Certificate Request: Naloxone Training — ${name} — ${dateStr}`;
+    const body =
+`Full name: ${payload.user.name}
+Email: ${payload.user.email}
+Age range: ${payload.user.ageRange || "Prefer not to say"}
+Gender: ${payload.user.gender || "Prefer not to say"}
+Completed at (UTC): ${payload.completedAt}
+Mastery: 100%
+Second tries used: ${payload.secondTriesUsed}
+
+Safety reminders:
+• Call 911 immediately for suspected overdose or poisoning.
+• Naloxone (Narcan) is safe to give even if unsure.
+• If no response in 2–3 minutes, give a second dose & continue rescue breathing.
+
+Donate: ${DONATE_URL}`;
+
+    const gmail = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(EMAIL_TO)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const outlook = `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(EMAIL_TO)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    document.getElementById('gmailBtn').href = gmail;
+    document.getElementById('outlookBtn').href = outlook;
+    document.getElementById('subjectLineText').textContent = subject;
+
+    document.getElementById('copyBtn').onclick = async ()=>{
+      try{ await navigator.clipboard.writeText(body); alert("Copied! Paste into your email if the compose button did not open."); }
+      catch{ alert("Copy failed. Select the text below and copy manually."); }
+    };
+    document.getElementById('copySubjectBtn').onclick = async ()=>{
+      try{ await navigator.clipboard.writeText(subject); alert("Subject copied."); }
+      catch{ alert("Copy failed. Select and copy the subject manually."); }
+    };
+  }
+
+  function retakeMissed(){
+    const notMasteredIds = QUESTION_BANK.map(q=>q.id).filter(id=>!(state.answers[id]&&state.answers[id].mastered));
+    if (notMasteredIds.length===0){ startQuiz(); return; }
+    state.order = shuffle(notMasteredIds.map(id=>QUESTION_BANK.findIndex(q=>q.id===id)));
+    state.shuffled = QUESTION_BANK.map(q=>{const c=deepClone(q); if (c.type==="mcq"||c.type==="tf") c.choices = shuffle(c.choices.map(x=>({...x}))); return c;});
+    state.cursor=0; notMasteredIds.forEach(id=>{ delete state.answers[id]; });
+    document.getElementById('screen-results').classList.add('hidden');
+    document.getElementById('screen-quiz').classList.remove('hidden'); renderQuestion();
+  }
+
+  function restartAll(){ startQuiz(); }
+
+  document.getElementById('startBtn').addEventListener('click', startQuiz);
+  document.getElementById('submitBtn').addEventListener('click', submitCurrent);
+  document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+  document.getElementById('quitBtn').addEventListener('click', ()=>{document.getElementById('screen-quiz').classList.add('hidden');document.getElementById('screen-intro').classList.remove('hidden');});
+  document.getElementById('retakeMissedBtn').addEventListener('click', retakeMissed);
+  document.getElementById('restartBtn').addEventListener('click', restartAll);
+  </script>
+
+  <!-- Minimal bilingual toggle, no layout/style changes -->
+  <script>
+  (function () {
+    const STR = {
+      en: {
+        title: "Naloxone Training Quiz",
+        subtitle: "Enter your info, complete the quiz, then email us your results to receive your certificate.",
+        full_name: "Full name",
+        email: "Email address",
+        age_label: "Age range (choose “Prefer not to say” if you wish)",
+        age_select: "Select your age range",
+        prefer_not: "Prefer not to say",
+        gender_label: "Gender (choose “Prefer not to say” if you wish)",
+        gender_select: "Select gender",
+        female: "Female", male: "Male", non_binary: "Non-binary",
+        disclaimer: "Educational only, not medical advice. In an emergency, call 911. We collect your name and email to issue certificates; age range and gender are optional and include “Prefer not to say.”",
+        start_quiz: "Start Quiz",
+        submit: "Submit", next: "Next", quit: "Quit",
+        results: "Results",
+        cert_intro: "To receive your certificate:",
+        compose_gmail: "Compose in Gmail",
+        compose_outlook: "Compose in Outlook",
+        copy_details: "Copy details",
+        subject: "Subject:",
+        copy_subject: "Copy subject",
+        support_title: "Support XFoundation",
+        items_to_master: "Items to master",
+        retake_missed: "Retake Missed Only",
+        start_over: "Start Over",
+      },
+      es: {
+        title: "Cuestionario de Capacitación en Naloxona",
+        subtitle: "Ingresa tu información, completa el cuestionario y luego envíanos tus resultados por correo para recibir tu certificado.",
+        full_name: "Nombre completo",
+        email: "Correo electrónico",
+        age_label: "Rango de edad (puedes elegir “Prefiero no decirlo”)",
+        age_select: "Selecciona tu rango de edad",
+        prefer_not: "Prefiero no decirlo",
+        gender_label: "Género (puedes elegir “Prefiero no decirlo”)",
+        gender_select: "Selecciona género",
+        female: "Femenino", male: "Masculino", non_binary: "No binario",
+        disclaimer: "Solo con fines educativos, no es consejo médico. En una emergencia, llama al 911. Recopilamos tu nombre y correo para emitir certificados; el rango de edad y el género son opcionales y incluyen “Prefiero no decirlo”.",
+        start_quiz: "Iniciar cuestionario",
+        submit: "Enviar", next: "Siguiente", quit: "Salir",
+        results: "Resultados",
+        cert_intro: "Para recibir tu certificado:",
+        compose_gmail: "Redactar en Gmail",
+        compose_outlook: "Redactar en Outlook",
+        copy_details: "Copiar detalles",
+        subject: "Asunto:",
+        copy_subject: "Copiar asunto",
+        support_title: "Apoya a XFoundation",
+        items_to_master: "Elementos por dominar",
+        retake_missed: "Repetir solo pendientes",
+        start_over: "Volver a empezar",
+      }
+    };
+
+    const sel = document.getElementById('lang');
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const t = k => (STR[sel?.value] || STR.en)[k] || (STR.en[k] || '');
+
+    function text(el, k) { if (el) el.textContent = t(k); }
+    function ph(el, k)   { if (el) el.setAttribute('placeholder', t(k)); }
+
+    function apply() {
+      document.title = t('title') + " | XFoundation";
+      text($('#screen-intro h1'), 'title');
+      text($('#screen-intro .lead'), 'subtitle');
+
+      $$('#screen-intro label').forEach(lab => {
+        const forId = lab.getAttribute('for') || '';
+        if (forId === 'nameInput') text(lab, 'full_name');
+        if (forId === 'emailInput') text(lab, 'email');
+        if (forId === 'ageRange')  text(lab, 'age_label');
+        if (forId === 'gender')    text(lab, 'gender_label');
+      });
+
+      ph($('#nameInput'), 'full_name');
+      ph($('#emailInput'), 'email');
+
+      const ageSel = $('#ageRange');
+      if (ageSel && ageSel.options.length) {
+        ageSel.options[0].textContent = t('age_select');
+        const last = ageSel.options.length - 1;
+        if (last >= 0) ageSel.options[last].textContent = t('prefer_not');
+      }
+      const genderSel = $('#gender');
+      if (genderSel && genderSel.options.length >= 4) {
+        genderSel.options[0].textContent = t('gender_select');
+        genderSel.options[1].textContent = t('female');
+        genderSel.options[2].textContent = t('male');
+        genderSel.options[3].textContent = t('non_binary');
+        if (genderSel.options[4]) genderSel.options[4].textContent = t('prefer_not');
+      }
+
+      text($('.notice'), 'disclaimer');
+
+      const startBtn = $('#startBtn'); if (startBtn) startBtn.textContent = t('start_quiz');
+      const submitBtn = $('#submitBtn'); if (submitBtn) submitBtn.textContent = t('submit');
+      const nextBtn = $('#nextBtn'); if (nextBtn) nextBtn.textContent = t('next');
+      const quitBtn = $('#quitBtn'); if (quitBtn) quitBtn.textContent = t('quit');
+
+      const res = $('#screen-results h2'); if (res) res.textContent = t('results');
+      text($('#screen-results .callout strong'), 'cert_intro');
+      const g = $('#gmailBtn'); if (g) g.textContent = t('compose_gmail');
+      const o = $('#outlookBtn'); if (o) o.textContent = t('compose_outlook');
+      const c = $('#copyBtn'); if (c) c.textContent = t('copy_details');
+
+      const subjBlk = $('#screen-results .small');
+      if (subjBlk) {
+        subjBlk.childNodes.forEach(n=>{
+          if (n.nodeType===3 && /Subject:|Asunto:/.test(n.textContent)) n.textContent = t('subject') + ' ';
+        });
+      }
+      const copySub = $('#copySubjectBtn'); if (copySub) copySub.textContent = t('copy_subject');
+      const supportTitle = $('.donate div div[style*="font-weight"]'); if (supportTitle) supportTitle.textContent = t('support_title');
+      const itm = $('#missedBlock h3'); if (itm) itm.textContent = t('items_to_master');
+      const rem = $('#retakeMissedBtn'); if (rem) rem.textContent = t('retake_missed');
+      const over = $('#restartBtn'); if (over) over.textContent = t('start_over');
+    }
+
+    const saved = localStorage.getItem('xf_lang') || 'en';
+    if (sel) sel.value = saved;
+    apply();
+
+    sel && sel.addEventListener('change', () => {
+      localStorage.setItem('xf_lang', sel.value);
+      apply();
+    });
+  })();
+  </script>
+</body>
+</html>
