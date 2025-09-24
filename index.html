@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>XFoundation – Naloxone Training Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --text:#08060B; --bg:#FFFFFF; --sep:#F7F7F7;
+      --primary:#E86D36; --primary-ink:#FFFFFF;
+      --secondary:#4B3D75; --secondary-ink:#FFFFFF;
+      --accent:#2E1A4E; --muted:#4B4B4B;
+      --card:#FFFFFF; --border:#E9E9E9;
+      --ok:#22c55e; --warn:#f59e0b; --err:#B00020;
+    }
+    body{margin:0;font-family:"Source Sans Pro",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:var(--bg);line-height:1.5}
+    .wrap{max-width:920px;margin:0 auto;padding:24px 16px 80px}
+    header.brand{display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid var(--accent);padding-bottom:12px;margin-bottom:20px;gap:12px}
+    .logo{height:96px;object-fit:contain}
+    @media (max-width:900px){ .logo{height:72px} }
+    @media (max-width:600px){ .logo{height:56px} }
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.04)}
+    h1,h2,h3{font-family:"PT Sans",sans-serif;margin:0 0 8px}
+    h1{font-weight:700} h2{font-weight:700;font-size:1.25rem}
+    p.lead{color:#333;margin-top:4px}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+    button,a.btn{border:1px solid transparent;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-secondary{background:var(--secondary);color:#fff}
+    .btn-ghost{background:#fff;color:var(--text);border-color:var(--border)}
+    .btn-warning{background:var(--warn);color:#000}
+    .grid{display:grid;gap:14px} .grid-2{grid-template-columns:1fr} @media(min-width:720px){.grid-2{grid-template-columns:1fr 1fr}}
+    .field{display:flex;flex-direction:column;gap:6px} .field label{font-family:"PT Sans",sans-serif;font-weight:700}
+    .field input,.field select{padding:12px 14px;border-radius:10px;border:1px solid var(--border)}
+    .notice{padding:12px 14px;border-radius:12px;border:1px dashed var(--border);background:var(--sep);margin-top:10px}
+    .feedback{border-left:4px solid var(--ok);padding:10px 12px;background:#F1FBF4;border-radius:8px}
+    .feedback.bad{border-color:var(--err);background:#FDE7EA;color:#7A0012}
+    .hint{border-left:4px solid var(--warn);background:#FFF8E6;padding:10px 12px;border-radius:8px}
+    .progress{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .bar{flex:1;height:10px;border-radius:999px;background:#EFEFEF;overflow:hidden}
+    .bar span{display:block;height:100%;width:0%;background:linear-gradient(90deg,#E86D36,#4B3D75);transition:width .35s}
+    .choices{display:grid;gap:10px} .choice{display:flex;gap:10px;padding:12px 14px;border:1px solid var(--border);border-radius:12px}
+    .hidden{display:none!important} .center{text-align:center} .footer{margin-top:16px;font-size:.85rem;color:#666} .small{font-size:.9rem;color:#555}
+    .callout{padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#fff}
+    code.inline{background:#fff;border:1px solid var(--border);border-radius:6px;padding:2px 6px}
+    .donate{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:12px}
+    .donate img{width:130px;height:130px;border:1px solid var(--border);border-radius:12px;padding:6px;background:#fff}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand">
+    <div>
+      <!-- Inline logo identical to Spanish -->
+      <img class="logo" alt="XFoundation logo"
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACAAAAASACAYAAABrt62cAAAQAElEQVR4Aezd+Zdcd303+K6qVu/dam2WLbfttiUkWZFkE5klkBATAlkgBEgArxhCgDDPPHkmT+bMcs6cM3/AnDln5sxP85x5ZiYPCYE8QNhJAoEQ4GEgARISsGW0L62tu9W71EtVz+eW1bJka2mpu6vrfuulc799b917697v+3WFjtDnU+Vik18ECBAgQIAAAQIECBAgQIBA6gLyESBAgAABAgQIECBAgAABAukLNGkAaICHLCIBAgQIECBAgAABAgQINLqA/AQIECBAgAABAgQIECBAgED6Ak0aABrhIc..." />
+    </div>
+    <label for="lang" class="sr-only">Language</label>
+    <select id="lang" aria-label="Language" style="padding:8px 12px;border:1px solid var(--border);border-radius:10px">
+      <option value="en" selected>English</option>
+      <option value="es">Español</option>
+    </select>
+  </header>
+
+  <!-- Intro, quiz questions, etc. remain unchanged -->
+
+  <div id="screen-results" class="card hidden">
+    <h2 class="center">Results</h2>
+    <div class="center"><p id="resultSummary" class="lead"></p></div>
+
+    <div id="certBlock" class="hidden">
+      <div class="callout">
+        <strong>To receive your certificate:</strong>
+        <ol style="margin:8px 0 0 18px">
+          <li>Tap <em>Compose in Gmail</em> or <em>Compose in Outlook</em> to send us your results, or use <em>Copy details</em> as a fallback.</li>
+          <li>Subject line will be filled in; you can copy it separately if needed.</li>
+          <li>Our email: <code class="inline">xfoundationmjgx@gmail.com</code></li>
+        </ol>
+        <div class="donate">
+          <img id="qrDonate" alt="Donate QR" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fxfoundationx.org%2FDonate">
+          <div>
+            <div style="font-weight:700;font-family:'PT Sans',sans-serif;margin-bottom:4px">Support XFoundation</div>
+            <div class="small">Scan the QR to donate or use: <a id="donateLink" href="https://xfoundationx.org/Donate" target="_blank" rel="noopener">xfoundationx.org/Donate</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="actions" style="flex-wrap:wrap;margin-top:10px">
+        <a id="gmailBtn" class="btn-primary btn" href="#" target="_blank">Compose in Gmail</a>
+        <a id="outlookBtn" class="btn-secondary btn" href="#" target="_blank">Compose in Outlook</a>
+        <button id="copyBtn" class="btn-ghost">Copy details</button>
+      </div>
+      <div class="small" style="margin-top:8px">
+        Subject: <code class="inline" id="subjectLineText"></code>
+        <button id="copySubjectBtn" class="btn-ghost" style="padding:6px 10px;border-radius:8px;margin-left:6px">Copy subject</button>
+      </div>
+      <p class="footer center">Version: v3-prod</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// Existing quiz logic above…
+// Modify buildFinishBlock to include email in copied details
+function buildFinishBlock(){
+  const subject = "XF Certificate Request";
+  const body =
+`Full name: ${state.user.name}
+Email: ${state.user.email}
+Age range: ${state.user.ageRange}
+Gender: ${state.user.gender}
+
+Safety reminders:
+• Call 911 immediately for suspected overdose or poisoning.
+• Naloxone (Narcan) is safe to give even if unsure.
+• If no response in 2–3 minutes, give a second dose & continue rescue breathing.
+
+Our email: xfoundationmjgx@gmail.com
+
+Donate: https://xfoundationx.org/Donate`;
+
+  document.getElementById('gmailBtn').href =
+    "https://mail.google.com/mail/?view=cm&fs=1&su="+encodeURIComponent(subject)+"&to=xfoundationmjgx@gmail.com&body="+encodeURIComponent(body);
+  document.getElementById('outlookBtn').href =
+    "https://outlook.office.com/mail/deeplink/compose?subject="+encodeURIComponent(subject)+"&to=xfoundationmjgx@gmail.com&body="+encodeURIComponent(body);
+
+  document.getElementById('subjectLineText').textContent = subject;
+
+  document.getElementById('copyBtn').onclick = async ()=>{
+    await navigator.clipboard.writeText(body);
+    alert("Details copied, including our email.");
+  };
+  document.getElementById('copySubjectBtn').onclick = async ()=>{
+    await navigator.clipboard.writeText(subject);
+    alert("Subject copied.");
+  };
+}
+</script>
+
+<!-- Keep your language toggle script as before -->
+</body>
+</html>
